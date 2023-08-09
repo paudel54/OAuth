@@ -6,3 +6,7 @@ wrap app on index.tsx with browser router to provide global access to routing.
 
 3. npm react-redux @reduxjs/toolkit 
 
+4. npm i yup react-hook-form @types/yup @hookform/resolvers   
+
+yup: => Yup is a schema builder for runtime value parsing and validation. 
+ 
