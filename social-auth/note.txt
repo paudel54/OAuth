@@ -1,0 +1,5 @@
+1. configured tailwind and react with TS
+npx create-react-app project-name --template typescript
+
+2. npm react router dom 
+wrap app on index.tsx with browser router to provide global access to routing. 
