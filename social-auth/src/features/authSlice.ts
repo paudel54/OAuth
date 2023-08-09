@@ -18,6 +18,8 @@ export const authSlice = createSlice({
     reducers:{
         // define actions on reducers. 
         // state indicates current state
+        // action should have payload property of type User. 
+        // Payload property of the action should be of type 'USER'
         login: (state, action:PayloadAction<User>)=>{
             state.user = action.payload;
         },
