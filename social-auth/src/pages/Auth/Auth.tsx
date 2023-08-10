@@ -1,3 +1,7 @@
+//import firebaseAuth
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { setDoc, doc } from "firebase/firestore";
+import { auth, db } from "../../firebase";
 import { authClasses } from "./authClasses";
 import { useForm } from "react-hook-form";
 // adds validation rules defined in Yup schema to form fields
@@ -5,20 +9,50 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { AuthForm } from "../../models/Form";
 import { authFormSchema } from "../../models/Form";
 import { useState } from "react";
-const { button, hr, forgotPasswordButton } = authClasses;
+import { useAppDispatch } from "../../hooks/storeHooks";
+import { login } from "../../features/authSlice";
 
-const handleFormSubmit = (data: AuthForm) => {
-  console.log("Check out the TypeScript Type Checked Data.", data);
-};
+const { button, hr, forgotPasswordButton } = authClasses;
 
 const Auth = () => {
   // The argument passed must be either login or sign-up. with default login
-
   const [authType, setAuthType] = useState<"login" | "sign-up">("login");
+  const [loading, setLoading] = useState(false);
+  const dispatch = useAppDispatch();
 
   const handleAuthType = () => {
     // if not logges in then sow sign-up.
     setAuthType((prev) => (prev === "login" ? "sign-up" : "login"));
+  };
+
+  const handleFormSubmit = async (data: AuthForm) => {
+    console.log("Inside the  Handle Form submit ");
+    const { email, password } = data;
+    try {
+      setLoading(true);
+      const { user } = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      console.log("Checking out the user from firestore", user);
+      // update user to firestore
+      // create users collection and save email and userid
+      await setDoc(doc(db, "users", user.uid), { email });
+      setLoading(false);
+      // dipatch to login action with some payload:;
+      if (user && user.email)
+        dispatch(
+          login({
+            email: user.email,
+            id: user.uid,
+            photoUrl: user.photoURL || null,
+          })
+        );
+    } catch (error) {
+      setLoading(false);
+      console.log(error);
+    }
   };
 
   const {
@@ -92,7 +126,7 @@ const Auth = () => {
                 <></>
               )}
             </div>
-            <button className={button}>
+            <button disabled={loading} className={button}>
               Sign {authType === "login" ? "in" : "up"} with email
             </button>
           </div>
