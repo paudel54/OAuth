@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { AuthForm } from "../../models/Form";
 import { authFormSchema } from "../../models/Form";
+import { useState } from "react";
 const { button, hr, forgotPasswordButton } = authClasses;
 
 const handleFormSubmit = (data: AuthForm) => {
@@ -11,6 +12,15 @@ const handleFormSubmit = (data: AuthForm) => {
 };
 
 const Auth = () => {
+  // The argument passed must be either login or sign-up. with default login
+
+  const [authType, setAuthType] = useState<"login" | "sign-up">("login");
+
+  const handleAuthType = () => {
+    // if not logges in then sow sign-up.
+    setAuthType((prev) => (prev === "login" ? "sign-up" : "login"));
+  };
+
   const {
     register,
     handleSubmit,
@@ -82,15 +92,32 @@ const Auth = () => {
                 <></>
               )}
             </div>
-            <button className={button}>Sign in with email</button>
+            <button className={button}>
+              Sign {authType === "login" ? "in" : "up"} with email
+            </button>
           </div>
           <div className="text-sm font-light py-4">
-            <span className="text-sm">
-              Dont have an account yet?
-              <span className="ml-6 font-bold hover:underline cursor-pointer">
-                Sign Up
+            {authType === "login" ? (
+              <span className="text-sm">
+                Dont have an account yet?
+                <span
+                  onClick={handleAuthType}
+                  className="ml-6 font-bold hover:underline cursor-pointer"
+                >
+                  Sign Up
+                </span>
               </span>
-            </span>
+            ) : (
+              <span>
+                Already have an account ?{" "}
+                <span
+                  onClick={handleAuthType}
+                  className="ml-6 font-bold hover:underline cursor-pointer"
+                >
+                  Sign in
+                </span>
+              </span>
+            )}
           </div>
 
           <div className="my-3 flex items-center px-3">
