@@ -2,6 +2,8 @@
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  GoogleAuthProvider,
+  signInWithPopup,
 } from "firebase/auth";
 import { setDoc, doc } from "firebase/firestore";
 import { auth, db } from "../../firebase";
@@ -14,6 +16,7 @@ import { authFormSchema } from "../../models/Form";
 import { useState } from "react";
 import { useAppDispatch } from "../../hooks/storeHooks";
 import { login } from "../../features/authSlice";
+import { Provider } from "react-redux";
 
 const { button, hr, forgotPasswordButton } = authClasses;
 
@@ -27,6 +30,25 @@ const Auth = () => {
   const handleAuthType = () => {
     // if not logges in then sow sign-up.
     setAuthType((prev) => (prev === "login" ? "sign-up" : "login"));
+  };
+
+  const signInWithGoogle = async () => {
+    const provider = new GoogleAuthProvider();
+
+    try {
+      const { user } = await signInWithPopup(auth, provider);
+      if (user && user.email) {
+        dispatch(
+          login({
+            email: user.email,
+            id: user.uid,
+            photoUrl: user.photoURL || null,
+          })
+        );
+      }
+    } catch (error) {
+      console.log("Error Signing in:", error);
+    }
   };
 
   const handleFormSubmit = async (data: AuthForm) => {
@@ -99,7 +121,7 @@ const Auth = () => {
           className="p-4 md:p-5 lg:p-6"
         >
           <div className="grid gap-y-3">
-            <button type="button" className={button}>
+            <button onClick={signInWithGoogle} type="button" className={button}>
               Google
             </button>
           </div>
