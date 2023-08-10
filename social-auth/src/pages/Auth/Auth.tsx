@@ -1,5 +1,8 @@
 //import firebaseAuth
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
 import { setDoc, doc } from "firebase/firestore";
 import { auth, db } from "../../firebase";
 import { authClasses } from "./authClasses";
@@ -29,7 +32,8 @@ const Auth = () => {
   const handleFormSubmit = async (data: AuthForm) => {
     console.log("Inside the  Handle Form submit ");
     const { email, password } = data;
-
+    setErrorMessage(null);
+    setLoading(true);
     if (authType === "sign-up") {
       try {
         setLoading(true);
@@ -59,6 +63,17 @@ const Auth = () => {
       }
     } else {
       //Sign in  User.
+      const { user } = await signInWithEmailAndPassword(auth, email, password);
+      setLoading(false);
+      if (user && user.email) {
+        dispatch(
+          login({
+            email: user.email,
+            id: user.uid,
+            photoUrl: user.photoURL || null,
+          })
+        );
+      }
     }
   };
 
