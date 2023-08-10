@@ -18,6 +18,7 @@ const Auth = () => {
   // The argument passed must be either login or sign-up. with default login
   const [authType, setAuthType] = useState<"login" | "sign-up">("login");
   const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<null | string>(null);
   const dispatch = useAppDispatch();
 
   const handleAuthType = () => {
@@ -28,30 +29,36 @@ const Auth = () => {
   const handleFormSubmit = async (data: AuthForm) => {
     console.log("Inside the  Handle Form submit ");
     const { email, password } = data;
-    try {
-      setLoading(true);
-      const { user } = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-      console.log("Checking out the user from firestore", user);
-      // update user to firestore
-      // create users collection and save email and userid
-      await setDoc(doc(db, "users", user.uid), { email });
-      setLoading(false);
-      // dipatch to login action with some payload:;
-      if (user && user.email)
-        dispatch(
-          login({
-            email: user.email,
-            id: user.uid,
-            photoUrl: user.photoURL || null,
-          })
+
+    if (authType === "sign-up") {
+      try {
+        setLoading(true);
+        const { user } = await createUserWithEmailAndPassword(
+          auth,
+          email,
+          password
         );
-    } catch (error) {
-      setLoading(false);
-      console.log(error);
+        console.log("Checking out the user from firestore", user);
+        // update user to firestore
+        // create users collection and save email and userid
+        await setDoc(doc(db, "users", user.uid), { email });
+        setLoading(false);
+        // dipatch to login action with some payload:;
+        if (user && user.email)
+          dispatch(
+            login({
+              email: user.email,
+              id: user.uid,
+              photoUrl: user.photoURL || null,
+            })
+          );
+      } catch (error: any) {
+        setLoading(false);
+        const errorCode = error.code;
+        setErrorMessage(errorCode);
+      }
+    } else {
+      //Sign in  User.
     }
   };
 
@@ -66,6 +73,11 @@ const Auth = () => {
   return (
     <div className="grid h-screen place-items-center px-4 text-sm font-medium">
       <div className="bg-red-300 w-full max-w-sm rounded-lg bg-slate-700/30 shadow">
+        {errorMessage && (
+          <p className="bg-red-400 px-3 py-2 text-center rounded-md text-white">
+            {errorMessage}
+          </p>
+        )}
         {/* Passing on custom form to submit handler */}
         <form
           onSubmit={handleSubmit(handleFormSubmit)}
