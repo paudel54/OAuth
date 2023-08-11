@@ -26,25 +26,28 @@ const Header = () => {
                 Sign in
               </Link>
             )}
-            <Link
-              to="/profile"
-              className="w-10 h-10 p-1 rounded-full ring-2 ring-gray-300"
-            >
-              {user?.photoUrl ? (
-                <>
-                  <img
-                    alt="Avatar"
-                    className="rounded-full"
-                    src={user.photoUrl.toString()}
-                  />
-                </>
-              ) : (
-                <div className="w-8 h-8 mb-3 text-sm font-bold grid place-content-center rounded-full bg-orange-200 text-gray-600">
-                  {user?.email[0].toUpperCase()}
-                  {"s"}
-                </div>
-              )}
-            </Link>
+            {user ? (
+              <Link
+                to="/profile"
+                className="w-10 h-10 p-1 rounded-full ring-2 ring-gray-300"
+              >
+                {user?.photoUrl ? (
+                  <>
+                    <img
+                      alt="Avatar"
+                      className="rounded-full"
+                      src={user.photoUrl.toString()}
+                    />
+                  </>
+                ) : (
+                  <div className="w-8 h-8 mb-3 text-sm font-bold grid place-content-center rounded-full bg-orange-200 text-gray-600">
+                    {user?.email[0].toUpperCase()}
+                  </div>
+                )}
+              </Link>
+            ) : (
+              <></>
+            )}
           </div>
         </div>
       </nav>
