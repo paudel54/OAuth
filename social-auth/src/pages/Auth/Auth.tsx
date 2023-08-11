@@ -4,6 +4,7 @@ import {
   signInWithEmailAndPassword,
   GoogleAuthProvider,
   signInWithPopup,
+  sendPasswordResetEmail,
 } from "firebase/auth";
 import { setDoc, doc } from "firebase/firestore";
 import { auth, db } from "../../firebase";
@@ -26,10 +27,32 @@ const Auth = () => {
   const [authType, setAuthType] = useState<"login" | "sign-up">("login");
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<null | string>(null);
-
+  // state to control reset toggle
   const [resetPassword, setResetPassword] = useState(false);
 
+  const [resetPasswordEmail, setResetPasswordEmail] = useState("");
+  const [resetPasswordSuccess, setResetPasswordSuccess] = useState<
+    string | null
+  >(null);
+  const [resetPasswordError, setResetPasswordError] = useState<string | null>(
+    null
+  );
+
   const dispatch = useAppDispatch();
+
+  const handlePasswordReset = async () => {
+    if (!resetPasswordEmail.length) return;
+    try {
+      await sendPasswordResetEmail(auth, resetPasswordEmail);
+      setResetPasswordSuccess(
+        " Password Reset Email sent. Please check your inbox."
+      );
+      setResetPasswordError(null);
+    } catch (error: any) {
+      setResetPasswordError(error.message);
+      setResetPasswordSuccess(null);
+    }
+  };
 
   const handleAuthType = () => {
     // if not logges in then sow sign-up.
@@ -117,6 +140,11 @@ const Auth = () => {
         isOpen={resetPassword}
         // On Close function sets resetPassword to false.
         onClose={() => setResetPassword(false)}
+        handlePasswordReset={handlePasswordReset}
+        resetPasswordEmail={resetPasswordEmail}
+        resetPasswordSuccess={resetPasswordSuccess}
+        resetPasswordError={resetPasswordError}
+        setResetPasswordEmail={setResetPasswordEmail}
       />
       <div className="grid h-screen place-items-center px-4 text-sm font-medium bg-blue-300">
         <div className="bg-red-300 w-full max-w-sm rounded-lg bg-slate-700/30 shadow">
