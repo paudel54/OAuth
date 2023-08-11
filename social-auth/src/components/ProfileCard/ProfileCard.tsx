@@ -1,15 +1,17 @@
-import { FC } from "react";
+import { Dispatch, FC, SetStateAction } from "react";
 import { User } from "../../models/User";
 interface ProfileCardProps {
   handleLogout: () => Promise<void>;
   //   interface inside interface || nested Interface.
   user: User;
+  setResetPassword: () => void;
 }
 
 const ProfileCard: FC<ProfileCardProps> = ({
   handleLogout,
   //   destructure and create variable name photo URL and email check out.
   user: { photoUrl, email },
+  setResetPassword,
 }) => {
   return (
     <div className="w-screen h-[80vh] flex items-center justify-center bg-red-300">
@@ -25,12 +27,14 @@ const ProfileCard: FC<ProfileCardProps> = ({
 
           <span className="text-sm text-gray-500">{email}</span>
           <div className="flex mt-4 space-x-3 md:mt-6">
-            <a
-              href="?#"
+            <button
+              onClick={setResetPassword}
+              type="button"
               className="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-blue-500"
             >
               Change Password
-            </a>
+            </button>
+
             <button
               onClick={handleLogout}
               className="bg-red-500 inline-flex items-center px-4 py-2 text-sm font-medium text-center text-gray-900"
