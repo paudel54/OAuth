@@ -17,6 +17,8 @@ import { useState } from "react";
 import { useAppDispatch } from "../../hooks/storeHooks";
 import { login } from "../../features/authSlice";
 
+import ResetPassword from "../../components/ResetPassword/ResetPassword";
+
 const { button, hr, forgotPasswordButton } = authClasses;
 
 const Auth = () => {
@@ -24,6 +26,9 @@ const Auth = () => {
   const [authType, setAuthType] = useState<"login" | "sign-up">("login");
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<null | string>(null);
+
+  const [resetPassword, setResetPassword] = useState(false);
+
   const dispatch = useAppDispatch();
 
   const handleAuthType = () => {
@@ -107,111 +112,128 @@ const Auth = () => {
   });
 
   return (
-    <div className="grid h-screen place-items-center px-4 text-sm font-medium">
-      <div className="bg-red-300 w-full max-w-sm rounded-lg bg-slate-700/30 shadow">
-        {errorMessage && (
-          <p className="bg-red-400 px-3 py-2 text-center rounded-md text-white">
-            {errorMessage}
-          </p>
-        )}
-        {/* Passing on custom form to submit handler */}
-        <form
-          onSubmit={handleSubmit(handleFormSubmit)}
-          className="p-4 md:p-5 lg:p-6"
-        >
-          <div className="grid gap-y-3">
-            <button onClick={signInWithGoogle} type="button" className={button}>
-              Google
-            </button>
-          </div>
-
-          <div className="my-3 flex items-center px-3">
-            <hr className={hr} />
-            <span className="text-slate-500">or</span>
-            <hr className={hr} />
-          </div>
-
-          <div className="grid gap-y-3">
-            <div>
-              <input
-                {...register("email")}
-                type="email"
-                placeholder="email@gmail.com"
-                className="focus:border-purple-400 w-full rounded-md border border-slate-600 bg-gray-700  text-white p-2"
-              />
-              {errors.email ? (
-                <span className="text-red-700">{errors.email.message}</span>
-              ) : (
-                <></>
-              )}
+    <>
+      <ResetPassword
+        isOpen={resetPassword}
+        // On Close function sets resetPassword to false.
+        onClose={() => setResetPassword(false)}
+      />
+      <div className="grid h-screen place-items-center px-4 text-sm font-medium bg-blue-300">
+        <div className="bg-red-300 w-full max-w-sm rounded-lg bg-slate-700/30 shadow">
+          {errorMessage && (
+            <p className="bg-red-400 px-3 py-2 text-center rounded-md text-white">
+              {errorMessage}
+            </p>
+          )}
+          {/* Passing on custom form to submit handler */}
+          <form
+            onSubmit={handleSubmit(handleFormSubmit)}
+            className="p-4 md:p-5 lg:p-6"
+          >
+            <div className="grid gap-y-3">
+              <button
+                onClick={signInWithGoogle}
+                type="button"
+                className={button}
+              >
+                Google
+              </button>
             </div>
-            <div>
-              <input
-                {...register("password")}
-                type="password"
-                placeholder="Input Password"
-                className="focus:border-purple-400 w-full rounded-md border border-slate-600 bg-gray-700 text-white p-2"
-              />
 
-              {errors.password ? (
-                <span className="text-red-700">{errors.password.message}</span>
-              ) : (
-                <></>
-              )}
+            <div className="my-3 flex items-center px-3">
+              <hr className={hr} />
+              <span className="text-slate-500">or</span>
+              <hr className={hr} />
             </div>
-            <div>
-              <input
-                {...register("confirmPassword")}
-                type="password"
-                placeholder="Confirm Password"
-                className="focus:border-purple-400 w-full rounded-md border border-slate-600 bg-gray-700 text-white p-2"
-              />
-              {errors.confirmPassword ? (
-                <span className="text-red-700">
-                  {errors.confirmPassword.message}
+
+            <div className="grid gap-y-3">
+              <div>
+                <input
+                  {...register("email")}
+                  type="email"
+                  placeholder="email@gmail.com"
+                  className="focus:border-purple-400 w-full rounded-md border border-slate-600 bg-gray-700  text-white p-2"
+                />
+                {errors.email ? (
+                  <span className="text-red-700">{errors.email.message}</span>
+                ) : (
+                  <></>
+                )}
+              </div>
+              <div>
+                <input
+                  {...register("password")}
+                  type="password"
+                  placeholder="Input Password"
+                  className="focus:border-purple-400 w-full rounded-md border border-slate-600 bg-gray-700 text-white p-2"
+                />
+
+                {errors.password ? (
+                  <span className="text-red-700">
+                    {errors.password.message}
+                  </span>
+                ) : (
+                  <></>
+                )}
+              </div>
+              <div>
+                <input
+                  {...register("confirmPassword")}
+                  type="password"
+                  placeholder="Confirm Password"
+                  className="focus:border-purple-400 w-full rounded-md border border-slate-600 bg-gray-700 text-white p-2"
+                />
+                {errors.confirmPassword ? (
+                  <span className="text-red-700">
+                    {errors.confirmPassword.message}
+                  </span>
+                ) : (
+                  <></>
+                )}
+              </div>
+              <button disabled={loading} className={button}>
+                Sign {authType === "login" ? "in" : "up"} with email
+              </button>
+            </div>
+            <div className="text-sm font-light py-4">
+              {authType === "login" ? (
+                <span className="text-sm">
+                  Dont have an account yet?
+                  <span
+                    onClick={handleAuthType}
+                    className="ml-6 font-bold hover:underline cursor-pointer"
+                  >
+                    Sign Up
+                  </span>
                 </span>
               ) : (
-                <></>
+                <span>
+                  Already have an account ?{" "}
+                  <span
+                    onClick={handleAuthType}
+                    className="ml-6 font-bold hover:underline cursor-pointer"
+                  >
+                    Sign in
+                  </span>
+                </span>
               )}
             </div>
-            <button disabled={loading} className={button}>
-              Sign {authType === "login" ? "in" : "up"} with email
-            </button>
-          </div>
-          <div className="text-sm font-light py-4">
-            {authType === "login" ? (
-              <span className="text-sm">
-                Dont have an account yet?
-                <span
-                  onClick={handleAuthType}
-                  className="ml-6 font-bold hover:underline cursor-pointer"
-                >
-                  Sign Up
-                </span>
-              </span>
-            ) : (
-              <span>
-                Already have an account ?{" "}
-                <span
-                  onClick={handleAuthType}
-                  className="ml-6 font-bold hover:underline cursor-pointer"
-                >
-                  Sign in
-                </span>
-              </span>
-            )}
-          </div>
 
-          <div className="my-3 flex items-center px-3">
-            <hr className={hr} />
-            <button type="button" className={forgotPasswordButton}>
-              forgot password
-            </button>
-            <hr className={hr} />
-          </div>
-        </form>
+            <div className="my-3 flex items-center px-3">
+              <hr className={hr} />
+              <button
+                type="button"
+                onClick={() => setResetPassword(true)}
+                className={forgotPasswordButton}
+              >
+                forgot password
+              </button>
+              <hr className={hr} />
+            </div>
+          </form>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 
