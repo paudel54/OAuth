@@ -14,11 +14,12 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { AuthForm } from "../../models/Form";
 import { authFormSchema } from "../../models/Form";
-import { useState } from "react";
-import { useAppDispatch } from "../../hooks/storeHooks";
+import { useEffect, useState } from "react";
+import { useAppDispatch, useAppSelector } from "../../hooks/storeHooks";
 import { login } from "../../features/authSlice";
 
 import ResetPassword from "../../components/ResetPassword/ResetPassword";
+import { useNavigate } from "react-router-dom";
 
 const { button, hr, forgotPasswordButton } = authClasses;
 
@@ -39,6 +40,15 @@ const Auth = () => {
   );
 
   const dispatch = useAppDispatch();
+  const { user } = useAppSelector((state) => state.auth);
+  const navigate = useNavigate();
+
+  // If we get any user on state then navigate to homepage: This happens when we sign in and get user response.
+  useEffect(() => {
+    if (Boolean(user)) {
+      navigate("/");
+    }
+  }, [user, navigate]);
 
   const handlePasswordReset = async () => {
     if (!resetPasswordEmail.length) return;

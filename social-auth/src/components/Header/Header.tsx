@@ -1,7 +1,11 @@
 import { headerClasses } from "./headerClasses";
 import { Link } from "react-router-dom";
+import { useAppSelector } from "../../hooks/storeHooks";
+
 const Header = () => {
   const { header } = headerClasses;
+  const { user } = useAppSelector((state) => state.auth);
+
   return (
     <header className={header}>
       <nav className="bg-white border-gray-200 px-4 lg:px-6 py-2.5">
@@ -13,12 +17,15 @@ const Header = () => {
             >
               Home
             </Link>
-            <Link
-              to="/auth"
-              className="mr-2 px-4 py-2.5 bg-blue-600 text-white hover:bg-blue-700 rounded-lg"
-            >
-              Sign in
-            </Link>
+            {/* Implementation of Use selector.  */}
+            {Boolean(!user) && (
+              <Link
+                to="/auth"
+                className="mr-2 px-4 py-2.5 bg-blue-600 text-white hover:bg-blue-700 rounded-lg"
+              >
+                Sign in
+              </Link>
+            )}
             <Link
               to="/profile"
               className="w-10 h-10 p-1 rounded-full ring-2 ring-gray-300"
