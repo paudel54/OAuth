@@ -16,7 +16,6 @@ import { authFormSchema } from "../../models/Form";
 import { useState } from "react";
 import { useAppDispatch } from "../../hooks/storeHooks";
 import { login } from "../../features/authSlice";
-import { Provider } from "react-redux";
 
 const { button, hr, forgotPasswordButton } = authClasses;
 
